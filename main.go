@@ -15,7 +15,7 @@ const gitExecutable = "git"
 
 var count int
 
-func fileExists(path string) bool {
+func pathExists(path string) bool {
 	if _, err := os.Stat(path); err != nil {
 		if os.IsNotExist(err) {
 			return false
@@ -58,7 +58,7 @@ func walk(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			logrus.Fatalf("error getting absolute directory for %s: %v", path, err)
 		}
-		if fileExists(filepath.Join(path, "HEAD")) && fileExists(filepath.Join(path, "refs")) {
+		if pathExists(filepath.Join(path, "HEAD")) && pathExists(filepath.Join(path, "refs")) {
 			gitDirty(basepath)
 		}
 		return filepath.SkipDir

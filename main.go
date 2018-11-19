@@ -50,7 +50,8 @@ func gitDirty(path string) {
 
 func walk(path string, info os.FileInfo, err error) error {
 	if err != nil {
-		logrus.Fatalf("error walking %s: %v", path, err)
+		logrus.Warnf("error walking %s: %v", path, err)
+		return filepath.SkipDir
 	}
 	if info.IsDir() && info.Name() == ".git" {
 		basepath, err := filepath.Abs(filepath.Dir(path))

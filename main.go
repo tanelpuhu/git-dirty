@@ -13,7 +13,11 @@ import (
 
 const gitExecutable = "git"
 
-var count int
+var (
+	count        int
+	exitAfter    int
+	existOnFirst bool
+)
 
 func pathExists(path string) bool {
 	if _, err := os.Stat(path); err != nil {
@@ -45,6 +49,9 @@ func gitDirty(path string) {
 			fmt.Printf("  %s\n", line)
 		}
 		count++
+		if existOnFirst || (exitAfter > 0 && count >= exitAfter) {
+			os.Exit(1)
+		}
 	}
 }
 
@@ -71,7 +78,12 @@ func init() {
 	if err != nil {
 		logrus.Fatalf("%s not present in $PATH", gitExecutable)
 	}
+	flag.IntVar(&exitAfter, "limit", 0, "exit with error on after so many dirty repos")
+	flag.BoolVar(&existOnFirst, "first", false, "exit with error on first dirty repo")
 	flag.Parse()
+	if exitAfter < 0 {
+		logrus.Fatalf("negative limit not allowed: %v", exitAfter)
+	}
 }
 
 func main() {

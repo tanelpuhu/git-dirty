@@ -14,9 +14,12 @@ import (
 const gitExecutable = "git"
 
 var (
-	count        int
-	exitAfter    int
-	existOnFirst bool
+	count int
+	flags struct {
+		exitAfter    int
+		existOnFirst bool
+		onlyPath     bool
+	}
 )
 
 func pathExists(path string) bool {
@@ -45,11 +48,13 @@ func gitDirty(path string) {
 	}
 	if len(output) > 0 {
 		fmt.Println(path)
-		for _, line := range strings.Split(strings.TrimSpace(string(output)), "\n") {
-			fmt.Printf("  %s\n", line)
+		if !flags.onlyPath {
+			for _, line := range strings.Split(strings.TrimSpace(string(output)), "\n") {
+				fmt.Printf("  %s\n", line)
+			}
 		}
 		count++
-		if existOnFirst || (exitAfter > 0 && count >= exitAfter) {
+		if flags.existOnFirst || (flags.exitAfter > 0 && count >= flags.exitAfter) {
 			os.Exit(1)
 		}
 	}
@@ -78,11 +83,12 @@ func init() {
 	if err != nil {
 		logrus.Fatalf("%s not present in $PATH", gitExecutable)
 	}
-	flag.IntVar(&exitAfter, "limit", 0, "exit with error on after so many dirty repos")
-	flag.BoolVar(&existOnFirst, "first", false, "exit with error on first dirty repo")
+	flag.IntVar(&flags.exitAfter, "limit", 0, "exit with error on after so many dirty repos")
+	flag.BoolVar(&flags.existOnFirst, "first", false, "exit with error on first dirty repo")
+	flag.BoolVar(&flags.onlyPath, "path", false, "show only path")
 	flag.Parse()
-	if exitAfter < 0 {
-		logrus.Fatalf("negative limit not allowed: %v", exitAfter)
+	if flags.exitAfter < 0 {
+		logrus.Fatalf("negative limit not allowed: %v", flags.exitAfter)
 	}
 }
 

@@ -78,7 +78,7 @@ func walk(path string, info os.FileInfo, err error) error {
 	return nil
 }
 
-func init() {
+func main() {
 	_, err := exec.LookPath(gitExecutable)
 	if err != nil {
 		logrus.Fatalf("%s not present in $PATH", gitExecutable)
@@ -90,9 +90,6 @@ func init() {
 	if flags.exitAfter < 0 {
 		logrus.Fatalf("negative limit not allowed: %v", flags.exitAfter)
 	}
-}
-
-func main() {
 	args := flag.Args()
 	if len(flag.Args()) == 0 {
 		args = append(args, ".")

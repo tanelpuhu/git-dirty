@@ -31,17 +31,8 @@ func pathExists(path string) bool {
 	return true
 }
 
-func chdir(path string) {
-	if err := os.Chdir(path); err != nil {
-		panic(err)
-	}
-}
-
 func gitDirty(path string) {
-	wd, _ := os.Getwd()
-	defer chdir(wd)
-	chdir(path)
-	output, err := exec.Command(gitExecutable, "status", "--short").CombinedOutput()
+	output, err := exec.Command(gitExecutable, "-C", path, "status", "--short").CombinedOutput()
 	if err != nil {
 		fmt.Printf("%s\n", output)
 		logrus.Fatal(err)

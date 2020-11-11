@@ -40,8 +40,10 @@ func gitDirty(path string) {
 	if len(output) > 0 {
 		fmt.Println(path)
 		if !flags.onlyPath {
-			for _, line := range strings.Split(strings.TrimSpace(string(output)), "\n") {
-				fmt.Printf("  %s\n", line)
+			for _, line := range strings.Split(string(output), "\n") {
+				if line != "" {
+					fmt.Printf("  %s\n", strings.TrimSpace(line))
+				}
 			}
 		}
 		count++
